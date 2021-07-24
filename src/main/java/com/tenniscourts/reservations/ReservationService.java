@@ -20,17 +20,17 @@ public class ReservationService {
         throw new UnsupportedOperationException();
     }
 
-    public ReservationDTO findReservation(Long reservationId) throws Throwable {
-        return reservationRepository.findById(reservationId).map(reservationMapper::map).orElseThrow(() -> {
+    public ReservationDTO findReservation(Long reservationId) {
+        return reservationRepository.findById(reservationId).map(reservationMapper::map).<EntityNotFoundException>orElseThrow(() -> {
             throw new EntityNotFoundException("Reservation not found.");
         });
     }
 
-    public ReservationDTO cancelReservation(Long reservationId) throws Throwable{
+    public ReservationDTO cancelReservation(Long reservationId) {
         return reservationMapper.map(this.cancel(reservationId));
     }
 
-    private Reservation cancel(Long reservationId) throws Throwable {
+    private Reservation cancel(Long reservationId) {
         return reservationRepository.findById(reservationId).map(reservation -> {
 
             this.validateCancellation(reservation);
@@ -38,7 +38,7 @@ public class ReservationService {
             BigDecimal refundValue = getRefundValue(reservation);
             return this.updateReservation(reservation, refundValue, ReservationStatus.CANCELLED);
 
-        }).orElseThrow(() -> {
+        }).<EntityNotFoundException>orElseThrow(() -> {
             throw new EntityNotFoundException("Reservation not found.");
         });
     }
@@ -73,7 +73,7 @@ public class ReservationService {
 
     /*TODO: This method actually not fully working, find a way to fix the issue when it's throwing the error:
             "Cannot reschedule to the same slot.*/
-    public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) throws Throwable {
+    public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) {
         Reservation previousReservation = cancel(previousReservationId);
 
         if (scheduleId.equals(previousReservation.getSchedule().getId())) {

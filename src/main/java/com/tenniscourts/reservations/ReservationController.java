@@ -17,17 +17,17 @@ public class ReservationController extends BaseRestController {
     }
 
     @GetMapping(path = "findReservation")
-    public ResponseEntity<ReservationDTO> findReservation(Long reservationId) throws Throwable {
+    public ResponseEntity<ReservationDTO> findReservation(Long reservationId) {
         return ResponseEntity.ok(reservationService.findReservation(reservationId));
     }
 
     @DeleteMapping(path = "cancelReservation")
-    public ResponseEntity<ReservationDTO> cancelReservation(Long reservationId) throws Throwable {
+    public ResponseEntity<ReservationDTO> cancelReservation(Long reservationId) {
         return ResponseEntity.ok(reservationService.cancelReservation(reservationId));
     }
 
     @PutMapping(path = "rescheduleReservation")
-    public ResponseEntity<ReservationDTO> rescheduleReservation(Long reservationId, Long scheduleId) throws Throwable {
+    public ResponseEntity<ReservationDTO> rescheduleReservation(Long reservationId, Long scheduleId) {
         return ResponseEntity.ok(reservationService.rescheduleReservation(reservationId, scheduleId));
     }
 }
