@@ -1,23 +1,46 @@
 package com.tenniscourts.reservations;
 
 import com.tenniscourts.exceptions.EntityNotFoundException;
+import com.tenniscourts.guests.Guest;
+import com.tenniscourts.guests.GuestRepository;
+import com.tenniscourts.schedules.Schedule;
+import com.tenniscourts.schedules.ScheduleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final GuestRepository guestRepository;
+    private final ScheduleRepository scheduleRepository;
 
     private final ReservationMapper reservationMapper;
 
     public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
-        throw new UnsupportedOperationException();
+        Optional<Guest> guest = guestRepository.findById(createReservationRequestDTO.getGuestId());
+        if (!guest.isPresent()) {
+            throw new EntityNotFoundException("Guest not found.");
+        }
+
+        Optional<Schedule> schedule = scheduleRepository.findById(createReservationRequestDTO.getScheduleId());
+        if (!schedule.isPresent()) {
+            throw new EntityNotFoundException("Schedule not found.");
+        }
+
+        List<Reservation> bySchedule_id = reservationRepository.findBySchedule_Id(schedule.get().getId());
+        if (!bySchedule_id.isEmpty()) {
+            throw new IllegalStateException("Reservation already booked.");
+        }
+
+        return reservationMapper.map(reservationRepository.saveAndFlush(Reservation.builder().guest(guest.get()).schedule(schedule.get()).value(new BigDecimal(100)).build()));
     }
 
     public ReservationDTO findReservation(Long reservationId) {
