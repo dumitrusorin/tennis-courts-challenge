@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ReservationController extends BaseRestController {
 
-    private final ReservationService reservationService;
+    private final IReservationService reservationService;
 
     @PostMapping(path = "bookReservation")
     public ResponseEntity<Void> bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {

@@ -16,11 +16,11 @@ import java.util.List;
 @RestController
 public class ScheduleController extends BaseRestController {
 
-    private final ScheduleService scheduleService;
+    private final IScheduleService scheduleService;
 
     @PostMapping(path = "addScheduleTennisCourt")
     public ResponseEntity<Void> addScheduleTennisCourt(@RequestBody CreateScheduleRequestDTO createScheduleRequestDTO) {
-        return ResponseEntity.created(locationByEntity(scheduleService.addSchedule(createScheduleRequestDTO.getTennisCourtId(), createScheduleRequestDTO).getId())).build();
+        return ResponseEntity.created(locationByEntity(scheduleService.addSchedule(createScheduleRequestDTO).getId())).build();
     }
 
     @GetMapping(path = "findSchedulesByDates")

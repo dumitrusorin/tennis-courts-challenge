@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class ReservationService {
+public class ReservationService implements IReservationService {
 
     private final ReservationRepository reservationRepository;
     private final GuestRepository guestRepository;
@@ -24,6 +24,7 @@ public class ReservationService {
 
     private final ReservationMapper reservationMapper;
 
+    @Override
     public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
         Optional<Guest> guest = guestRepository.findById(createReservationRequestDTO.getGuestId());
         if (!guest.isPresent()) {
@@ -43,12 +44,14 @@ public class ReservationService {
         return reservationMapper.map(reservationRepository.saveAndFlush(Reservation.builder().guest(guest.get()).schedule(schedule.get()).value(new BigDecimal(100)).build()));
     }
 
+    @Override
     public ReservationDTO findReservation(Long reservationId) {
         return reservationRepository.findById(reservationId).map(reservationMapper::map).<EntityNotFoundException>orElseThrow(() -> {
             throw new EntityNotFoundException("Reservation not found.");
         });
     }
 
+    @Override
     public ReservationDTO cancelReservation(Long reservationId) {
         return reservationMapper.map(this.cancel(reservationId));
     }
@@ -84,6 +87,7 @@ public class ReservationService {
         }
     }
 
+    @Override
     public BigDecimal getRefundValue(Reservation reservation) {
         long hours = ChronoUnit.HOURS.between(LocalDateTime.now(), reservation.getSchedule().getStartDateTime());
 
@@ -96,6 +100,7 @@ public class ReservationService {
 
     /*TODO: This method actually not fully working, find a way to fix the issue when it's throwing the error:
             "Cannot reschedule to the same slot.*/
+    @Override
     public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) {
         Reservation previousReservation = cancel(previousReservationId);
 

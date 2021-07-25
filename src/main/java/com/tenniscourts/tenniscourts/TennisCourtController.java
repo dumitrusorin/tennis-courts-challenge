@@ -14,7 +14,7 @@ import javax.ws.rs.POST;
 @RestController
 public class TennisCourtController extends BaseRestController {
 
-    private final TennisCourtService tennisCourtService;
+    private final ITennisCourtService tennisCourtService;
 
     @PostMapping(path = "addTennisCourt")
     public ResponseEntity<Void> addTennisCourt(TennisCourtDTO tennisCourtDTO) {
