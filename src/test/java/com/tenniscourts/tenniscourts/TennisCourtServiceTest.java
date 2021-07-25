@@ -34,7 +34,7 @@ public class TennisCourtServiceTest {
     private IScheduleService scheduleService;
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         verifyNoMoreInteractions(repository, mapper, scheduleService);
     }
 
@@ -66,7 +66,7 @@ public class TennisCourtServiceTest {
 
         when(repository.findByName(anyString())).thenReturn(Optional.of(tennisCourt));
 
-        assertThrows(IllegalStateException.class, ()-> service.addTennisCourt(tennisCourtDTO));
+        assertThrows(IllegalStateException.class, () -> service.addTennisCourt(tennisCourtDTO));
 
         verify(repository).findByName(court_name);
     }
@@ -119,7 +119,7 @@ public class TennisCourtServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, ()-> service.findTennisCourtWithSchedulesById(1L));
+        assertThrows(EntityNotFoundException.class, () -> service.findTennisCourtWithSchedulesById(1L));
 
         verify(repository).findById(1L);
     }

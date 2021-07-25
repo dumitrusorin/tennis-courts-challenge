@@ -41,7 +41,7 @@ public class ReservationService implements IReservationService {
             throw new IllegalStateException("Reservation already booked.");
         }
 
-        return reservationMapper.map(reservationRepository.saveAndFlush(Reservation.builder().guest(guest.get()).schedule(schedule.get()).value(new BigDecimal(100)).build()));
+        return reservationMapper.map(reservationRepository.saveAndFlush(Reservation.builder().guest(guest.get()).schedule(schedule.get()).value(new BigDecimal(10)).build()));
     }
 
     @Override
@@ -98,15 +98,15 @@ public class ReservationService implements IReservationService {
         return BigDecimal.ZERO;
     }
 
-    /*TODO: This method actually not fully working, find a way to fix the issue when it's throwing the error:
-            "Cannot reschedule to the same slot.*/
     @Override
     public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) {
-        Reservation previousReservation = cancel(previousReservationId);
+        ReservationDTO previousReservationDTO = findReservation(previousReservationId);
 
-        if (scheduleId.equals(previousReservation.getSchedule().getId())) {
+        if (scheduleId.equals(previousReservationDTO.getSchedule().getId())) {
             throw new IllegalArgumentException("Cannot reschedule to the same slot.");
         }
+
+        Reservation previousReservation = cancel(previousReservationId);
 
         previousReservation.setReservationStatus(ReservationStatus.RESCHEDULED);
         reservationRepository.save(previousReservation);

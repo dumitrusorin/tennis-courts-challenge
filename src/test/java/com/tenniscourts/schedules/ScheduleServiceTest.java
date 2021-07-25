@@ -120,7 +120,7 @@ public class ScheduleServiceTest {
     }
 
     @Test
-    void testFindSchedule(){
+    void testFindSchedule() {
 
         Schedule schedule = new Schedule();
         when(repository.findById(anyLong())).thenReturn(Optional.of(schedule));
@@ -135,7 +135,7 @@ public class ScheduleServiceTest {
     }
 
     @Test
-    void testFindSchedule_noResult(){
+    void testFindSchedule_noResult() {
 
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
         ScheduleDTO scheduleDTO = new ScheduleDTO();
@@ -149,7 +149,7 @@ public class ScheduleServiceTest {
     }
 
     @Test
-    void testFindSchedulesByTennisCourtId(){
+    void testFindSchedulesByTennisCourtId() {
 
         List<Schedule> scheduleList = Collections.singletonList(new Schedule());
         when(repository.findByTennisCourt_IdOrderByStartDateTime(anyLong())).thenReturn(scheduleList);
@@ -164,7 +164,7 @@ public class ScheduleServiceTest {
     }
 
     @Test
-    void testFindSchedulesByTennisCourtId_noResult(){
+    void testFindSchedulesByTennisCourtId_noResult() {
 
         List<Schedule> scheduleList = new ArrayList<>();
         when(repository.findByTennisCourt_IdOrderByStartDateTime(anyLong())).thenReturn(scheduleList);
