@@ -38,7 +38,7 @@ public class ReservationService implements IReservationService {
 
         List<Reservation> bySchedule_id = reservationRepository.findBySchedule_Id(schedule.get().getId());
         if (!bySchedule_id.isEmpty()) {
-            throw new IllegalStateException("Reservation already booked.");
+            throw new IllegalArgumentException("Reservation already booked.");
         }
 
         return reservationMapper.map(reservationRepository.saveAndFlush(Reservation.builder().guest(guest.get()).schedule(schedule.get()).value(new BigDecimal(10)).build()));

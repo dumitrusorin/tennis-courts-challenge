@@ -2,7 +2,6 @@ package com.tenniscourts.tenniscourts;
 
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.schedules.IScheduleService;
-import com.tenniscourts.schedules.ScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +19,14 @@ public class TennisCourtService implements ITennisCourtService {
 
     @Override
     public TennisCourtDTO addTennisCourt(TennisCourtDTO tennisCourt) {
+        if (tennisCourt.getName().isEmpty()) {
+            throw new IllegalArgumentException("Court name cannot be null.");
+        }
+
         Optional<TennisCourt> duplicate = tennisCourtRepository.findByName(tennisCourt.getName());
 
         if (duplicate.isPresent()) {
-            throw new IllegalStateException("Tennis court already exists");
+            throw new IllegalArgumentException("Tennis court already exists");
         }
 
         return tennisCourtMapper.map(tennisCourtRepository.saveAndFlush(tennisCourtMapper.map(tennisCourt)));

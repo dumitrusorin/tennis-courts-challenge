@@ -68,7 +68,7 @@ public class ScheduleServiceTest {
         when(repository.findByDates(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
         when(mapper.map(anyList())).thenReturn(Collections.singletonList(new ScheduleDTO()));
 
-        assertThrows(IllegalStateException.class, () -> service.addSchedule(createScheduleRequestDTO));
+        assertThrows(IllegalArgumentException.class, () -> service.addSchedule(createScheduleRequestDTO));
 
         verify(tennisCourtRepository).findById(1L);
         verify(repository).findByDates(now, now.plusHours(1));

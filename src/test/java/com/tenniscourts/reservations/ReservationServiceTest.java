@@ -87,7 +87,7 @@ public class ReservationServiceTest {
         when(scheduleRepository.findById(anyLong())).thenReturn(Optional.of(schedule));
         when(repository.findBySchedule_Id(anyLong())).thenReturn(Collections.singletonList(new Reservation()));
 
-        assertThrows(IllegalStateException.class, () -> service.bookReservation(createReservationRequestDTO));
+        assertThrows(IllegalArgumentException.class, () -> service.bookReservation(createReservationRequestDTO));
 
         verify(guestRepository).findById(1L);
         verify(scheduleRepository).findById(1L);

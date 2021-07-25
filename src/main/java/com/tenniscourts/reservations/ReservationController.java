@@ -7,26 +7,27 @@ import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
+@RequestMapping("/reservation")
 public class ReservationController extends BaseRestController {
 
     private final IReservationService reservationService;
 
-    @PostMapping(path = "bookReservation")
+    @PostMapping
     public ResponseEntity<Void> bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
         return ResponseEntity.created(locationByEntity(reservationService.bookReservation(createReservationRequestDTO).getId())).build();
     }
 
-    @GetMapping(path = "findReservation")
-    public ResponseEntity<ReservationDTO> findReservation(Long reservationId) {
+    @GetMapping(path = "/{reservationId}")
+    public ResponseEntity<ReservationDTO> findReservation(@PathVariable Long reservationId) {
         return ResponseEntity.ok(reservationService.findReservation(reservationId));
     }
 
-    @DeleteMapping(path = "cancelReservation")
-    public ResponseEntity<ReservationDTO> cancelReservation(Long reservationId) {
+    @DeleteMapping(path = "/{reservationId}")
+    public ResponseEntity<ReservationDTO> cancelReservation(@PathVariable Long reservationId) {
         return ResponseEntity.ok(reservationService.cancelReservation(reservationId));
     }
 
-    @PutMapping(path = "rescheduleReservation")
+    @PutMapping
     public ResponseEntity<ReservationDTO> rescheduleReservation(Long reservationId, Long scheduleId) {
         return ResponseEntity.ok(reservationService.rescheduleReservation(reservationId, scheduleId));
     }

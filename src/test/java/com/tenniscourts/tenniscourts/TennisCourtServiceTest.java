@@ -66,7 +66,7 @@ public class TennisCourtServiceTest {
 
         when(repository.findByName(anyString())).thenReturn(Optional.of(tennisCourt));
 
-        assertThrows(IllegalStateException.class, () -> service.addTennisCourt(tennisCourtDTO));
+        assertThrows(IllegalArgumentException.class, () -> service.addTennisCourt(tennisCourtDTO));
 
         verify(repository).findByName(court_name);
     }

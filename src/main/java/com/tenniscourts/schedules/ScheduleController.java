@@ -14,16 +14,17 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
+@RequestMapping("/schedule")
 public class ScheduleController extends BaseRestController {
 
     private final IScheduleService scheduleService;
 
-    @PostMapping(path = "addScheduleTennisCourt")
+    @PostMapping
     public ResponseEntity<Void> addScheduleTennisCourt(@RequestBody CreateScheduleRequestDTO createScheduleRequestDTO) {
         return ResponseEntity.created(locationByEntity(scheduleService.addSchedule(createScheduleRequestDTO).getId())).build();
     }
 
-    @GetMapping(path = "findSchedulesByDates")
+    @GetMapping("/byDates")
     public ResponseEntity<List<ScheduleDTO>> findSchedulesByDates(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                                                   @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         if (startDate.isEqual(endDate) || startDate.isAfter(endDate)) {
@@ -32,8 +33,8 @@ public class ScheduleController extends BaseRestController {
         return ResponseEntity.ok(scheduleService.findSchedulesByDates(LocalDateTime.of(startDate, LocalTime.of(0, 0)), LocalDateTime.of(endDate, LocalTime.of(23, 59))));
     }
 
-    @GetMapping(path = "findByScheduleId")
-    public ResponseEntity<ScheduleDTO> findByScheduleId(Long scheduleId) {
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleDTO> findByScheduleId(@PathVariable Long scheduleId) {
         return ResponseEntity.ok(scheduleService.findSchedule(scheduleId));
     }
 }
