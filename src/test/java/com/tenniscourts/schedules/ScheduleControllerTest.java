@@ -39,7 +39,6 @@ public class ScheduleControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    // TODO: 25-Jul-21 error parsing date
     @Test
     void testAddScheduleTennisCourt() throws Exception {
         CreateScheduleRequestDTO createScheduleRequestDTO = new CreateScheduleRequestDTO();
