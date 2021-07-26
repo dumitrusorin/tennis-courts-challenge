@@ -10,6 +10,9 @@ import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -194,26 +198,30 @@ public class ReservationServiceTest {
         verify(mapper).map(reservation);
     }
 
-    @Test
-    void testGetRefundValue_fullRefund() {
+    @ParameterizedTest
+    @MethodSource("getNumberOfHours")
+    void testGetRefundValue(Long hours, BigDecimal refund) {
         Schedule schedule = new Schedule();
 
-        LocalDateTime startDateTime = LocalDateTime.now().plusDays(2);
+        LocalDateTime startDateTime = LocalDateTime.now().plusHours(hours);
 
         schedule.setStartDateTime(startDateTime);
 
-        assertEquals(service.getRefundValue(Reservation.builder().schedule(schedule).value(BigDecimal.valueOf(10)).build()), BigDecimal.valueOf(10));
+        assertEquals(refund, service.getRefundValue(Reservation.builder().schedule(schedule).value(BigDecimal.valueOf(10)).build()));
     }
 
-    @Test
-    void testGetRefundValue_noRefund() {
-        Schedule schedule = new Schedule();
-
-        LocalDateTime startDateTime = LocalDateTime.now().plusHours(2L);
-
-        schedule.setStartDateTime(startDateTime);
-
-        assertEquals(service.getRefundValue(Reservation.builder().schedule(schedule).value(BigDecimal.valueOf(10)).build()), BigDecimal.ZERO);
+    private static Stream<Arguments> getNumberOfHours() {
+        return Stream.of(
+                Arguments.of(48L, BigDecimal.TEN),
+                Arguments.of(24L, BigDecimal.TEN),
+                Arguments.of(18L, BigDecimal.valueOf(7)),
+                Arguments.of(12L, BigDecimal.valueOf(7)),
+                Arguments.of(8L, BigDecimal.valueOf(5)),
+                Arguments.of(2L, BigDecimal.valueOf(5)),
+                Arguments.of(1L, BigDecimal.valueOf(2)),
+                Arguments.of(0L, BigDecimal.valueOf(2)),
+                Arguments.of(-1L, BigDecimal.ZERO)
+        );
     }
 
     @Test
@@ -275,7 +283,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void testFindPastReservations(){
+    void testFindPastReservations() {
         List<Reservation> reservationList = Collections.singletonList(new Reservation());
         when(repository.findPastReservations(any(LocalDateTime.class))).thenReturn(reservationList);
         when(mapper.map(anyList())).thenReturn(Collections.singletonList(new ReservationDTO()));

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -93,6 +94,12 @@ public class ReservationService implements IReservationService {
 
         if (hours >= 24) {
             return reservation.getValue();
+        } else if(hours>=12){
+            return reservation.getValue().subtract(reservation.getValue().divide(BigDecimal.valueOf(4), RoundingMode.CEILING));
+        } else if (hours>=2){
+            return reservation.getValue().divide(BigDecimal.valueOf(2), RoundingMode.FLOOR);
+        } else if (hours>=0) {
+            return reservation.getValue().divide(BigDecimal.valueOf(4), RoundingMode.FLOOR);
         }
 
         return BigDecimal.ZERO;
