@@ -118,4 +118,9 @@ public class ReservationService implements IReservationService {
         newReservation.setPreviousReservation(reservationMapper.map(previousReservation));
         return newReservation;
     }
+
+    @Override
+    public List<ReservationDTO> findPastReservations() {
+        return reservationMapper.map(reservationRepository.findPastReservations(LocalDateTime.now()));
+    }
 }

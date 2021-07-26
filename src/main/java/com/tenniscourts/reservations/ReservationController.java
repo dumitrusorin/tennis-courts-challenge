@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/reservation")
@@ -30,5 +32,10 @@ public class ReservationController extends BaseRestController {
     @PutMapping
     public ResponseEntity<ReservationDTO> rescheduleReservation(Long reservationId, Long scheduleId) {
         return ResponseEntity.ok(reservationService.rescheduleReservation(reservationId, scheduleId));
+    }
+
+    @GetMapping(path = "/pastReservations")
+    public ResponseEntity<List<ReservationDTO>> getPastReservations(){
+        return ResponseEntity.ok(reservationService.findPastReservations());
     }
 }

@@ -83,9 +83,10 @@ public class ReservationControllerTest {
 
     @Test
     void testRescheduleReservation() throws Exception {
-        mockMvc.perform(delete(URL + "/2")
+        MvcResult result = mockMvc.perform(delete(URL + "/2")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()).andReturn();
+        assertNotNull(result);
     }
 
     @Test
@@ -95,5 +96,10 @@ public class ReservationControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
-
+    @Test
+    void testFindPastReservations() throws Exception {
+        mockMvc.perform(get(URL + "/pastReservations")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }

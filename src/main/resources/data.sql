@@ -52,4 +52,11 @@ insert
         reservation
         (id, schedule_id, guest_id, value, reservation_status)
     values
-        (null, 1, 2, 10, 0);
+        (null, 2, 2, 10, 0);
+
+insert
+    into
+        reservation
+        (id, schedule_id, guest_id, value, reservation_status)
+    values
+        (null, 3, 2, 10, 0);

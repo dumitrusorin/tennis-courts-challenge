@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -271,5 +272,18 @@ public class ReservationServiceTest {
         verify(guestRepository).findById(1L);
         verify(scheduleRepository).findById(1L);
         verify(repository).findBySchedule_Id(1L);
+    }
+
+    @Test
+    void testFindPastReservations(){
+        List<Reservation> reservationList = Collections.singletonList(new Reservation());
+        when(repository.findPastReservations(any(LocalDateTime.class))).thenReturn(reservationList);
+        when(mapper.map(anyList())).thenReturn(Collections.singletonList(new ReservationDTO()));
+
+        List<ReservationDTO> response = service.findPastReservations();
+        assertEquals(1, response.size());
+
+        verify(repository).findPastReservations(any(LocalDateTime.class));
+        verify(mapper).map(reservationList);
     }
 }
