@@ -207,7 +207,7 @@ public class ReservationServiceTest {
 
         schedule.setStartDateTime(startDateTime);
 
-        assertEquals(refund, service.getRefundValue(Reservation.builder().schedule(schedule).value(BigDecimal.valueOf(10)).build()));
+        assertEquals(refund, service.getRefundValue(Reservation.builder().schedule(schedule).value(BigDecimal.valueOf(20)).build()));
     }
 
     private static Stream<Arguments> getNumberOfHours() {
