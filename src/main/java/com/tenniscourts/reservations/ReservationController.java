@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -37,5 +38,10 @@ public class ReservationController extends BaseRestController {
     @GetMapping(path = "/pastReservations")
     public ResponseEntity<List<ReservationDTO>> getPastReservations(){
         return ResponseEntity.ok(reservationService.findPastReservations());
+    }
+
+    @GetMapping(path = "/refund/{reservationId}")
+    public ResponseEntity<BigDecimal> refundDeposit(@PathVariable Long reservationId){
+        return ResponseEntity.ok(reservationService.getRefundDeposit(reservationId));
     }
 }

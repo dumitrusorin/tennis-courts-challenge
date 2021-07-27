@@ -294,4 +294,43 @@ public class ReservationServiceTest {
         verify(repository).findPastReservations(any(LocalDateTime.class));
         verify(mapper).map(reservationList);
     }
+
+    @ParameterizedTest
+    @MethodSource("refundSource")
+    void testRefundDeposit(ReservationStatus status, BigDecimal refund) {
+
+        Reservation reservation = new Reservation();
+        ReservationDTO reservationDTO = new ReservationDTO();
+        reservationDTO.setReservationStatus(status.name());
+        ScheduleDTO scheduleDTO = new ScheduleDTO();
+        scheduleDTO.setEndDateTime(LocalDateTime.now().minusDays(1));
+        reservationDTO.setSchedule(scheduleDTO);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(reservation));
+        when(mapper.map(any(Reservation.class))).thenReturn(reservationDTO);
+
+        if (status.equals(ReservationStatus.READY_TO_PLAY)) {
+            when(mapper.map(any(ReservationDTO.class))).thenReturn(reservation);
+        }
+
+        assertEquals(refund, service.getRefundDeposit(1L));
+
+        verify(repository).findById(1L);
+        verify(mapper).map(reservation);
+
+        if (status.equals(ReservationStatus.READY_TO_PLAY)) {
+            verify(mapper).map(reservationDTO);
+            verify(repository).saveAndFlush(reservation);
+        }
+    }
+
+
+    private static Stream<Arguments> refundSource() {
+        return Stream.of(
+                Arguments.of(ReservationStatus.READY_TO_PLAY, BigDecimal.TEN),
+                Arguments.of(ReservationStatus.REFUNDED, BigDecimal.ZERO),
+                Arguments.of(ReservationStatus.RESCHEDULED, BigDecimal.ZERO),
+                Arguments.of(ReservationStatus.CANCELLED, BigDecimal.ZERO)
+        );
+    }
 }

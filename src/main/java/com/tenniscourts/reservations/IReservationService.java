@@ -15,4 +15,6 @@ public interface IReservationService {
     ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId);
 
     List<ReservationDTO> findPastReservations();
+
+    BigDecimal getRefundDeposit(Long reservationId);
 }

@@ -42,7 +42,11 @@ public class ReservationService implements IReservationService {
             throw new IllegalArgumentException("Reservation already booked.");
         }
 
-        return reservationMapper.map(reservationRepository.saveAndFlush(Reservation.builder().guest(guest.get()).schedule(schedule.get()).value(new BigDecimal(10)).build()));
+        //I've concluded from code that 10 would be the value for the reservation.
+        // I'm aware a better approach would be a config file.
+        // I've added 10 for task 7.
+        Reservation reservation = Reservation.builder().guest(guest.get()).schedule(schedule.get()).value(new BigDecimal(20)).build();
+        return reservationMapper.map(reservationRepository.saveAndFlush(reservation));
     }
 
     @Override
@@ -92,14 +96,16 @@ public class ReservationService implements IReservationService {
     public BigDecimal getRefundValue(Reservation reservation) {
         long hours = ChronoUnit.HOURS.between(LocalDateTime.now(), reservation.getSchedule().getStartDateTime());
 
+        BigDecimal valueAfterChangingCharge = reservation.getValue().subtract(BigDecimal.TEN);
+
         if (hours >= 24) {
-            return reservation.getValue();
-        } else if(hours>=12){
-            return reservation.getValue().subtract(reservation.getValue().divide(BigDecimal.valueOf(4), RoundingMode.CEILING));
-        } else if (hours>=2){
-            return reservation.getValue().divide(BigDecimal.valueOf(2), RoundingMode.FLOOR);
-        } else if (hours>=0) {
-            return reservation.getValue().divide(BigDecimal.valueOf(4), RoundingMode.FLOOR);
+            return valueAfterChangingCharge;
+        } else if (hours >= 12) {
+            return valueAfterChangingCharge.subtract(valueAfterChangingCharge.divide(BigDecimal.valueOf(4), RoundingMode.CEILING));
+        } else if (hours >= 2) {
+            return valueAfterChangingCharge.divide(BigDecimal.valueOf(2), RoundingMode.FLOOR);
+        } else if (hours >= 0) {
+            return valueAfterChangingCharge.divide(BigDecimal.valueOf(4), RoundingMode.FLOOR);
         }
 
         return BigDecimal.ZERO;
@@ -129,5 +135,20 @@ public class ReservationService implements IReservationService {
     @Override
     public List<ReservationDTO> findPastReservations() {
         return reservationMapper.map(reservationRepository.findPastReservations(LocalDateTime.now()));
+    }
+
+    @Override
+    public BigDecimal getRefundDeposit(Long reservationId) {
+        ReservationDTO reservationDTO = findReservation(reservationId);
+
+        if (reservationDTO.getSchedule().getEndDateTime().isBefore(LocalDateTime.now())
+                && reservationDTO.getReservationStatus().equals(ReservationStatus.READY_TO_PLAY.name())) {
+
+            reservationDTO.setReservationStatus(ReservationStatus.REFUNDED.name());
+            reservationRepository.saveAndFlush(reservationMapper.map(reservationDTO));
+            return BigDecimal.TEN;
+        }
+
+        return BigDecimal.ZERO;
     }
 }
