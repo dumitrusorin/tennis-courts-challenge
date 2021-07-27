@@ -10,9 +10,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,9 +46,10 @@ public class GuestControllerTest {
 
     @Test
     void testAddGuest_fail() throws Exception {
-        mockMvc.perform(post(URL + "?name=")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(post(URL + "?name=")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Guest must have name.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
@@ -56,9 +61,10 @@ public class GuestControllerTest {
 
     @Test
     void testFindGuestById_fail() throws Exception {
-        mockMvc.perform(get(URL + "/10")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Guest not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
@@ -70,9 +76,10 @@ public class GuestControllerTest {
 
     @Test
     void testFindByName_fail_notFound() throws Exception {
-        mockMvc.perform(get(URL + "/byName/RogerFederer")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/byName/RogerFederer")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Guest not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
@@ -83,17 +90,19 @@ public class GuestControllerTest {
     }
 
     @Test
-    void testDelete_fail_interity() throws Exception {
-        mockMvc.perform(delete(URL + "/2")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+    void testDelete_fail_integrity() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(delete(URL + "/2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("This guest has history and cannot be deleted.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
     void testDelete_fail_notFound() throws Exception {
-        mockMvc.perform(delete(URL + "/10")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(delete(URL + "/10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Guest not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
@@ -105,9 +114,10 @@ public class GuestControllerTest {
 
     @Test
     void testUpdate_fail() throws Exception {
-        mockMvc.perform(put(URL + "?id=9&name=Venus Williams")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(put(URL + "?id=9&name=Venus Williams")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Guest not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test

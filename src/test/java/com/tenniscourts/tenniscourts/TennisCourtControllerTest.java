@@ -52,7 +52,7 @@ public class TennisCourtControllerTest {
         MvcResult mvcResult = mockMvc.perform(post(URL + "?name=")
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError()).andReturn();
-        assertEquals(Objects.requireNonNull(mvcResult.getResolvedException()).getMessage(), "Court name cannot be null.");
+        assertEquals("Court name cannot be null.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class TennisCourtControllerTest {
         MvcResult mvcResult = mockMvc.perform(get(URL + "/10")
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError()).andReturn();
-        assertEquals(Objects.requireNonNull(mvcResult.getResolvedException()).getMessage(), "Tennis Court not found.");
+        assertEquals("Tennis Court not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class TennisCourtControllerTest {
         MvcResult mvcResult = mockMvc.perform(get(URL + "/withSchedules/10")
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError()).andReturn();
-        assertEquals(Objects.requireNonNull(mvcResult.getResolvedException()).getMessage(), "Tennis Court not found.");
+        assertEquals("Tennis Court not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
 

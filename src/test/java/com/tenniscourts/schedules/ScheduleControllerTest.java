@@ -16,8 +16,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,36 +56,46 @@ public class ScheduleControllerTest {
 
     @Test
     void testAddScheduleTennisCourt_fail() throws Exception {
-        mockMvc.perform(post(URL)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        CreateScheduleRequestDTO createScheduleRequestDTO = new CreateScheduleRequestDTO();
+        createScheduleRequestDTO.setStartDateTime(LocalDateTime.of(2020, 12, 20, 20, 0, 0));
+        createScheduleRequestDTO.setTennisCourtId(1L);
+
+        MvcResult mvcResult = mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsBytes(createScheduleRequestDTO)))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("The schedule already exists.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
     void testFindSchedulesByDates() throws Exception {
-        mockMvc.perform(get(URL + "/byDates?startDate=2020-12-20&endDate=2020-12-20")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/byDates?startDate=2020-12-20&endDate=2020-12-20")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals("[]", mvcResult.getResponse().getContentAsString());
     }
 
     @Test
     void testFindSchedulesByDates_fail() throws Exception {
-        mockMvc.perform(get(URL + "/byDates?startDate=2020-12-20&endDate=2020-12-20")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/byDates?startDate=2020-12-20&endDate=2020-12-20")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals("[]", mvcResult.getResponse().getContentAsString());
     }
 
     @Test
     void testFindByScheduleId() throws Exception {
-        mockMvc.perform(get(URL + "/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("\"id\":1"));
     }
 
     @Test
     void testFindByScheduleId_fail() throws Exception {
-        mockMvc.perform(get(URL + "/10")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("\"id\":null"));
     }
 }

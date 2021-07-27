@@ -18,9 +18,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,9 +52,10 @@ public class ReservationControllerTest {
 
     @Test
     void testBookReservation_fail() throws Exception {
-        mockMvc.perform(post(URL + "?guestId=12&scheduleId=1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(post(URL + "?guestId=12&scheduleId=1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Guest not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
@@ -65,25 +67,27 @@ public class ReservationControllerTest {
 
     @Test
     void testFindReservation_fail() throws Exception {
-        mockMvc.perform(get(URL + "/10")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Reservation not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
     void testCancelReservation() throws Exception {
-        MvcResult result = mockMvc.perform(delete(URL + "/1")
+        MvcResult mvcResult = mockMvc.perform(delete(URL + "/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertNotNull(result);
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("\"id\":1"));
     }
 
     @Test
     void testCancelReservation_fail() throws Exception {
-        mockMvc.perform(delete(URL + "/10")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(delete(URL + "/10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Reservation not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
 
@@ -97,21 +101,34 @@ public class ReservationControllerTest {
 
     @Test
     void testRescheduleReservation_fail() throws Exception {
-        mockMvc.perform(delete(URL + "/10")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+        MvcResult mvcResult = mockMvc.perform(delete(URL + "/10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError()).andReturn();
+        assertEquals("Reservation not found.", Objects.requireNonNull(mvcResult.getResolvedException()).getMessage());
     }
 
     @Test
     void testFindPastReservations() throws Exception {
-        mockMvc.perform(get(URL + "/pastReservations")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/pastReservations")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertTrue(mvcResult.getResponse().getContentAsString().contains("\"id\":3"));
     }
 
-/*    @Test
-    void testRefundDeposit(ReservationStatus status, BigDecimal refund) {
-        mockMvc.perform(get(URL+"/refund/1"));
-    }*/
+    @Test
+    void testRefundDeposit_none() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/refund/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals("0", mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    void testRefundDeposit_full() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get(URL + "/refund/3")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertEquals("10", mvcResult.getResponse().getContentAsString());
+    }
 
 }

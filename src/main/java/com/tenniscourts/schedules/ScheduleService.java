@@ -28,7 +28,7 @@ public class ScheduleService implements IScheduleService {
 
         List<ScheduleDTO> duplicate = findSchedulesByDates(createScheduleRequestDTO.getStartDateTime(), createScheduleRequestDTO.getStartDateTime().plusHours(1));
         if (!duplicate.isEmpty()) {
-            throw new IllegalArgumentException("There schedule already exists.");
+            throw new IllegalArgumentException("The schedule already exists.");
         }
 
         return scheduleMapper.map(scheduleRepository.saveAndFlush(Schedule.builder().tennisCourt(tennisCourt.get())
